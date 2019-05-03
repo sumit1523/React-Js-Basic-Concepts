@@ -1,0 +1,1797 @@
+What is ReactJS?
+ReactJS is a library that generates the view layer of an application based on its state. ReactJS applications are built from React Components - independent resusable components that describe how the UI should look based on their own state and properties.
+
+-----------------------------------------------------------------------------------
+
+Why should I use ReactJS?
+ReactJS applications are incredibly performant at UI rerendering
+React Components make writing UI components easier
+What makes ReactJS so efficient at rerendering?
+React Components are used to generate a Virtual DOM - a light-weight abstraction of the actual HTML DOM. The Virtual DOM is able to be generated much more quickly than the HTML DOM because it does not have to calculate CSS styles and layouts. When a React Component changes state, the Virtual DOM is recreated and the difference between the new Virtual DOM and the previous Virtual DOM is calculated. The ReactJS library then calculates the most efficient way to update the HTML DOM to reflect these changes. This ends up being much faster than regenerating the entire HTML DOM from the top.
+-----------------------------------------------------------------------------------
+Virtual DOM
+
+How hard is it to use ReactJS?
+ReactJS is a relatively lightweight library and it does not take a whole lot of code to get started with it.
+-----------------------------------------------------------------------------------
+Here is an example of the code needed for a Hello World application:
+
+   <div id="root"></div>
+
+    ReactDOM.render(
+        <h1>Hello World!</h1>,
+        document.getElementById("root")
+    )
+-----------------------------------------------------------------------------------
+
+React Elements
+React Elements are objects that represent a DOM node. They are written using a syntax extension named JSX which we will cover later in this module. React Elements are different than React Components, which we will also cover later in this module.
+-----------------------------------------------------------------------------------
+
+   var element = <h1>Hello World!</h1>
+React Elements need to be rendered by the ReactDOM.render() method to appear in the DOM.
+-----------------------------------------------------------------------------------
+ReactDOM.render()
+The ReactDOM.render() method is used to render a React Element into a specified part of the HTML DOM. In most React applications, there is usually a single root node where everything gets rendered into, but you may use as many root nodes as you desire.
+-----------------------------------------------------------------------------------
+In this case, the <h1>Hello World!</h1> React Element is rendered into the DOM element with the id of "root".
+
+   <div id="root"></div>
+
+    ReactDOM.render(
+        <h1>Hello World!</h1>,
+        document.getElementById("root")
+    )
+Rerendering the DOM using additional render() calls
+Once a DOM is rendered, it will remain the same until another render() method is called.
+
+The following example uses additional render() calls to update the displayed number:
+
+
+    var num = 0;
+
+    function updateNum(){
+
+        ReactDOM.render(
+            <div>{num++}</div>,
+            document.getElementById("root")
+        )
+    }
+
+   setInterval(updateNum,100)
+   
+-----------------------------------------------------------------------------------
+
+JSX
+
+What is JSX?
+JSX is a syntax extension to JavaScript that allows React Elements to be written inside JavaScript using HTML tags.
+-----------------------------------------------------------------------------------
+Using JSX, we can create React Elements easily with HTML Tags:
+
+
+    var element = <h1>Hello World!</h1>
+Without JSX, the process is much slower and more verbose:
+
+
+    var element = React.createElement(
+        'h1',
+        null,
+        'Hello World!'
+    )
+-----------------------------------------------------------------------------------
+Using JSX with JavaScript Expressions
+Curly braces can be used to embed JavaScript expressions into JSX.
+
+The following are all examples of valid JavaScript expressions in JSX:
+
+    var str = "World!" 
+
+    var element =  <h1> Hello {str}</h1>
+    var item = {
+        name: "Cheese",
+        price: 5
+    }
+    var element = <p>{item.name} : ${item.price} </p>
+    var length = 20
+    var width = 10
+
+    function calculateArea(x,y){
+        return x * y
+    }
+
+    var element = <div>The Area is: {calculateArea(length,width)}</div>
+-----------------------------------------------------------------------------------
+Using JSX with Attributes
+You can supply attribute values using a string literal surrounded by quotes:
+
+    var element = <button className ="deleteButton"> Delete </button>
+You can also supply attributes values by embedding a JavaScript expression using curly braces:
+
+    var element = <img src ={product.imageURL}></img>
+Do not surround curly braces with quotes. This will cause your expression to be treated as a string literal:
+
+    //Do not do this
+    var element = <img src ="{product.imageURL}"></img>
+Some common HTML attributes are named differently in JSX. For example "class" becomes "className" because "class" is a reserved keyword in JavaScript. Furthermore, attribute names in JSX follow the camelCase naming convention so an HTML attribute such as fontsize would become fontSize in JSX.
+-----------------------------------------------------------------------------------
+Using JSX with Empty Tags
+If a HTML tag is empty, you can close it with a '/>' instead of using a closing tag.
+
+For example:
+
+    var element = <input className ="nameInput"/>
+Using JSX with a Style Object
+The style attribute can be populated with a style object instead of a string literal
+
+For example:
+
+    var styleObject = {
+        backgroundColor: 'red',
+        color:'blue',
+        fontSize: 25,
+        width: 100
+    }
+
+    var element = <input style = {styleObject}/>
+In this next example, the first set of curly braces is for the JSX expression while the second set of curly braces is for the style object:
+
+    var element = <input style = {{width:200,height:100}}/>
+-----------------------------------------------------------------------------------
+Using JSX with Nested Elements
+React Elements can be nested within other React Elements as long as the whole thing is wrapped by in a single element.
+
+For example:
+
+    var element = (
+        <div>
+            <div>Hello World</div>
+            <div>Hello World</div>
+        </div>
+
+    )
+This example is not surrounded with a single wrapping element and will throw an error:
+
+    var element = (
+        <div>Hello World</div>
+        <div>Hello World</div>
+    )
+It is recommended to surround nested elements with paranthesis to avoid the problems that occur with automatic semicolon insertion.
+-----------------------------------------------------------------------------------
+Using JSX Objects
+Objects created with JSX can be manipulated just like normal JavaScript objects. They can be passed in arrays, used as arguments or return statements to functions and used inside if statements or for loops.
+
+An example using JSX objects within an If Else statement:
+
+
+    var product = {name:"apple",stock:0}
+
+    if(product.stock < 0){
+        var element = <h1>The product named {product.name} is not in stock</h1>
+    }
+    else{
+        var element = <h1>The product named {product.name} and has {product.stock} units in stock</h1>
+    }
+
+    ReactDOM.render(
+        element,
+        document.getElementById("root")
+    )
+-----------------------------------------------------------------------------------
+
+Functional Components
+
+React Components
+A React Component is an independent reusable component that outputs a React Element based on its properties and state.
+-----------------------------------------------------------------------------------
+There are two types of React Components:
+
+>Functional Components
+>Class Components
+------------------
+Class Components have state, lifecycle methods, and properties while 
+Functional Components only have properties. In this module, we will cover Functional Components while Class Components will be covered in Module 2.
+-----------------------------------------------------------------------------------
+Functional Components
+
+Functional Components are just functions that output React Elements. By convention, the first letter of the function name should be capitalized.
+
+Here is an example:
+
+    function HelloWorld(){
+        return <h1>Hello World!</h1>
+    }
+You can use the React Component in JSX by creating an HTML tag with the same name as the React Component:
+
+    var element = <HelloWorld/>
+Another Example:
+
+   ReactDOM.render(
+        <HelloWorld/>,
+        document.getElementById("root")
+    )
+These examples will all evaluate to the React Element that is returned by the HelloWorld Component.
+-----------------------------------------------------------------------------------
+Adding Properties to Functional Components
+The first argument to a Functional Component is an object that contains the component's properties.
+
+    function HelloWorld(props){
+        return <h1>Message: {props.message}</h1>
+    }
+You can supply property values the same way as you supply attribute values:
+
+   ReactDOM.render(
+        <HelloWorld message="Hello World!"/>,
+        document.getElementById("root")
+    )
+Properties can be string literals, arrays or any other type of JavaScript object including other React Elements:
+
+    function HelloWorld(props){
+        return <h1>Value: {props.numberArray[props.index]} </h1>
+    }
+
+    ReactDOM.render(
+        <HelloWorld index = "3" numberArray={[1,2,3,4,5]}/>,
+        document.getElementById("root")
+    )
+
+You can supply as many property values as you want and they will all be accessible through the props argument.
+-----------------------------------------------------------------------------------
+
+Composing Components
+Functional Components can include other Functional Components in their output. This lets us keep our components organized and readible.
+
+For example, look at this Shopping Application that makes use of Composition:
+
+
+    function ShoppingTitle(props){
+        return (
+            <div>
+                <h1>{props.title}</h1>
+                <h2>Total Number of Items: {props.numItems}</h2>
+            </div>
+
+        ) 
+    }
+    function ListItem(props){
+        return <li>{props.item}</li>
+    }
+
+    function ShoppingList(props){
+        return (
+            <div>
+                <h3>{props.header}</h3>
+                <ol>
+                    <ListItem item = {props.items[0]}/>
+                    <ListItem item = {props.items[1]}/>
+                    <ListItem item = {props.items[2]}/>
+                </ol>
+            </div>
+        )
+    }
+
+
+    function ShoppingApp(props){
+
+        return (
+            <div>
+                <ShoppingTitle title = "My Shopping List" numItems = "9"/>
+                <ShoppingList header = "Food" items = {[ "Apple","Bread","Cheese"]}/>
+                <ShoppingList header = "Clothes" items = {[ "Shirt","Pants","Hat"]}/>
+                <ShoppingList header = "Supplies" items = {[ "Pen","Paper","Glue"]}/>
+            </div>
+        )
+    }
+
+    ReactDOM.render(
+        <ShoppingApp/>,
+        document.getElementById("root")
+    )
+-------------------------------------------------------------------------
+Compare that to just defining all the UI in one Functional Component.
+
+
+    function ShoppingApp(props){
+        return (
+            <div>
+                <div>
+                    <h1>My Shopping List</h1>
+                    <h2>Total Number of Items: 9</h2>
+                </div>
+                <div>
+                    <h3>Food</h3>
+                    <ol>
+                        <li>Apple</li>
+                        <li>Bread</li>
+                        <li>Cheese</li>
+                    </ol>
+                </div>
+
+                <div>
+                    <h3>Clothes</h3>
+                    <ol>
+                        <li>Shirt</li>
+                        <li>Pants</li>
+                        <li>Hat</li>
+                    </ol>
+                </div>
+
+                <div>
+                    <h3>Supplies</h3>
+                    <ol>
+                        <li>Pen</li>
+                        <li>Paper</li>
+                        <li>Glue</li>
+                    </ol>
+                </div>
+
+
+            </div>
+        )
+    }
+
+    ReactDOM.render(
+        <ShoppingApp/>,
+        document.getElementById("root")
+    )
+	---------------------------------------------------------------------------------
+	
+Conditional Rendering
+The output of a Functional Component can be determined based on its properties.
+
+For example:
+
+
+    function Feature(props){
+        if (props.active == true){
+            return <h1>This feature is active</h1>
+        }
+        else{
+            return <h1>This feature is not active</h1>
+        }
+
+    }
+This can also be accomplished using an inline conditional operator:
+
+
+    function Feature(props){
+        return <h1>This feature is {props.active? "active" : "not active"}</h1>
+    }
+----------------------------------------------------------------------------------
+Preventing Rendering
+The output of a Functional Component can be prevented from rendering.
+
+For example:
+
+
+    function Feature(props){
+        if(props.active!){
+            return null
+        }
+        else{
+            return <h1>{props.message}</h1>
+        }
+    }
+You can also conditionally prevent a feature from rendering using the && operator:
+
+    function Feature(props){
+        return (
+            props.active && <h1>{props.message}</h1>
+        )
+    }
+With the && operator, true and expression will always evaluate to expression. On the other hand, false and expression will always evaluate to false which won't render.
+-----------------------------------------------------------------------------------------------
+
+Class Components
+In addition to being written as a function, React Components can also be written using ES6 classes. Class Components differ from Functional Components because they allow React Components to have life cycle methods and state. Class components have two instance properties, this.state and this.props, that represent the component's state and properties respectively.
+
+React Component written using ES6 classes:
+
+class Welcome extends React.Component{
+    render(){
+        return <h1>Hello World!</h1>
+    }
+}
+This is the same as the following Functional Component:
+
+function Welcome(){
+    return <h1>Hello World!</h1>
+}
+Both types of React Components can be used by writing their name within an HTML tag:
+
+var element = <Welcome/>
+-----------------------------------------------------------------------------------------------
+Render()
+The render() method of a class component is used to describe what kind of React Element is going to be returned from the Class Component. It the same as the return value of a Functional Component.
+
+For example, the following Class Component will render<h1>Hello World!</h1>:
+
+<div id="root"></div>
+class Welcome extends React.Component{
+    render(){
+        return <h1>Hello World!</h1>
+    }
+} 
+
+//renders <h1>Hello World!</h1>
+ReactDOM.render(
+    <Welcome/>,
+    document.getElementById("root")
+)
+-----------------------------------------------------------------------------------------------
+Adding properties to Class Components
+The properties of a Class Component can be accessed through the this.props attribute. This differs slightly from Functional Components where the properties were passed in as a variable.
+
+class Welcome extends React.Component{
+    render(){
+        return <h1>Message: {this.props.message}</h1>
+    }
+}
+You can supply property values the same way as you supply attribute values:
+
+<Welcome message="Hello World!"/>
+
+-----------------------------------------------------------------------------------------------
+State
+ Bookmark this page
+Constructor(props)
+The constructor() method is called before a React Component is mounted and is used to set up the initial state of the component. It is important to call super(props) at the beginning of the constructor() method or else the this.props attribute may not work correctly. The first argument to the constructor() method represents the properties that are passed into the component.
+
+class Counter extends React.Component{
+    constructor(props){
+        super(props)
+    }
+    render(){
+        return <div>Hello World!</div>
+    }
+}
+-----------------------------------------------------------------------------------------------
+Adding an initial state to Class Components
+The initial state of a Class Component can be declared within the constructor() method. The state of the component must be declared as an object with attributes.
+
+
+class Counter extends React.Component{
+    constructor(props){
+        super(props)
+        this.state = {foo:123,bar:456}
+    }
+    render(){
+        return <div>foo:{this.state.foo} bar:{this.state.bar}</div>
+    }
+}
+-----------------------------------------------------------------------------------------------
+Updating state
+The setState(updater,[callback]) method is used to update the state of the component. It takes in an updater object and updates the component state by shallowly merging the updater object's attributes with the previous component state. The method updates the state asynchronously, so a there is an option callback that will be called once the state has finished updating completely. In order to use the setState() method, it must be referenced by calling this.setState().
+
+The setState method will trigger the updating phase of the component lifecycle to start. This will cause the component to rerender unless the shouldComponentUpdate() function returns false.
+
+Example:
+
+this.setState({message:"new message"})
+For example:
+
+
+
+class Counter extends React.Component{
+    constructor(props){
+        super(props)
+        //initial state set up
+        this.state = {message:"initial message"}
+    }
+    componentDidMount(){
+        //updating state
+        this.setState({message:"new message"})
+    }
+    render(){
+        return <div>Message:{this.state.message}</div>
+    }
+}
+-----------------------------------------------------------------------------------------------
+Updating state based on previous state
+The setState() method does not immediately update the state of the component, it just puts the update in a queue to be processed later. React may batch multiple update requests together to make rendering more efficient. Due to this, special precautions must be made when updating the state based on the component's previous state. 
+
+For example, the following code will only increment the state value attribute by 1 even though it was called 4 times:
+
+
+
+class Counter extends React.Component{
+    constructor(props){
+        super(props)
+        //initial state set up
+        this.state = {value:0}
+    }
+    componentDidMount(){
+        //updating state
+        this.setState({value:this.state.value+1})
+        this.setState({value:this.state.value+1})
+        this.setState({value:this.state.value+1})
+        this.setState({value:this.state.value+1})
+    }
+    render(){
+        return <div>Message:{this.state.message}</div>
+    }
+}
+The setState(updater,[callback]) method can take in an updater function as its first argument to update the state based on the previous state and properties. The return value of the updater function will be shallowly merged with the previous component state. The method updates the state asynchronously, so a there is an option callback that will be called once the state has finished updating completely.
+
+Example:
+
+this.setState((prevState, props) => { 
+    return {attribute:"value"}
+})
+Here is an example of how to update the state based on previous state:
+
+class Counter extends React.Component{
+    constructor(props){
+        super(props)
+        //initial state set up
+        this.state = {message:"initial message"}
+    }
+    componentDidMount()
+        //updating state
+        this.setState((prevState, props) => {
+            return {message: prevState.message + '!'}
+        })
+    }
+    render(){
+        return <div>Message:{this.state.message}</div>
+    }
+}
+-----------------------------------------------------------------------------------------------
+Using future state values
+Since state updates asynchronously, you can not just expect the state values to update immediately after a setState() method call.
+
+For example, the console log may not output the updated state:
+
+//this.state.count is originally 0
+this.setState({count:42})
+console.log(this.state.count)
+//outputs 0 still
+In order to use a state after it has been updated, do all logic in the callback argument:
+
+//this.state.count is originally 0
+this.setState({count:42}, () = {
+    console.log(this.state.count)
+    //outputs 42
+})
+-----------------------------------------------------------------------------------------------
+State is not mutable
+State is read only so you should not try to manually change the values of the state attributes. If the state needs to be updated, the setState() method is the only way to change the state.
+
+For example, don't do this:
+
+//incorrect, state should not be mutated directly
+this.state.message = "new message"
+-----------------------------------------------------------------------------------------------
+Life Cycle Methods
+Each Class Component goes through a component life cycle with multiple phases. There are several life cycle methods that can be overridden to run code at different parts of the life cycle.
+-----------------------------------------------------------------------------------------------
+Mounting Phase Methods
+The mounting phase begins when an instance of a component is created and rendered into the DOM. The following lifecycle methods occur in the order they are listed:
+
+constructor(props) - called when the component is first initialized. This method is only called once.
+componentWillMount() - called when a component is about to mount.
+render() - called when a component is rendered.
+componentDidMount() - called when a component has finished mounting. This is where network requests are usually made.
+-----------------------------------------------------------------------------------------------
+Updating Phase Methods
+The updating phase begins when a component's properties or state changes. The following lifecycle methods occur in the order they are listed:
+
+componentWillReceiveProps(nextProps) - called when a component has updated and is receiving new props.
+shouldComponentUpdate(nextProps, nextState) - called after receiving props and is about to update. If this method returns false, componentWillUpdate(), render(), and componentDidUpdate() will not execute.
+componentWillUpdate(nextProps, nextState) - called when a component is about to be updated.
+render() - called when a component is rerendered.
+componentDidUpdate(prevProps, prevState) - called when a component has finished updating.
+-----------------------------------------------------------------------------------------------
+Unmounting Phase Methods
+The unmounting phase begins when a component is being removed from the DOM. The following life cycle method occurs during the unmounting phase:
+
+componentWillUnmount() - called immediately before a component unmounts. This is where any cleanups are made such as cancelling timers or network requests.
+
+-----------------------------------------------------------------------------------------------
+
+Event Handlers
+
+Adding Event Handlers
+Handling events in React is similar to handling events in HTML. To attach an event handler to a React Element, assign the event handler method to the appropriate event attribute.
+
+Here are the main differences:
+
+One main difference in React is that you can use JSX brackets to specify the event handler function instead of declaring it as a string.
+
+The next difference is that React events are named using camelCase instead of being all lowercase. For example, onclick and onkeypress in HTML become onClick and onKeyPress in React respectively.
+
+Click event in React:
+
+<button onClick = {clickHandler} >Click Me</button>
+Click event in HTML:
+
+<button onclick = "clickHandler()" >Click Me</button>
+-----------------------------------------------------------------------------------------------
+Binding Event Handlers to Class Components
+Event handlers can be defined as methods within a class Component.
+
+In this example, the clickHandler method is defined within the Class Component and is assigned to the onClick attribute of the <button> element. The component renders a button that increments the number displayed inside it whenever it is clicked.
+
+
+class Counter extends React.Component{
+    constructor(props){
+        super(props)
+        this.state = {count:0}
+        //binding is necessary to make `this` point to the correct object
+        this.clickHandler = this.clickHandler.bind(this)
+    }
+    clickHandler(){
+      //increments the count of the state
+      this.setState((prevState,props) => {
+        return {count: prevState.count + 1}
+      })
+    }
+    render(){
+        //renders a button that displays the state count
+        return <button onClick = {this.clickHandler}>{this.state.count}</button>
+    }
+}
+
+ReactDOM.render(
+  <Counter/>,
+  document.getElementById("root")
+)
+The bind() method is used to bind the clickHandler() method's this keyword to the component instance. Without binding the function, the function will have its this keyword point to an incorrect object and the setState() method will not work correctly.
+
+Binding example:
+
+this.clickHandler = this.clickHandler.bind(this)
+An alternative to using bind() is to attach the event handler to the React Element using an ES6 arrow function. The arrow function will automatically have its this keyword point to the enclosing scope which happens to be the component instance.
+
+Fat arrow example:
+
+<button onClick = {{ () => this.clickHandler()}}>{this.state.count}</button>
+-----------------------------------------------------------------------------------------------
+Lifting State Up
+The setState() method only allows components to update their own state. However, there are times when an event occurs on a component and the event handler needs to update the state of another sibling or parent component. In this situation, we need to lift the state up to a parent component that encapuslates all of the components that need updating. The parent component will then pass down binded event handlers to the child components. When the child components call the binded event handlers, the parent component will update its state and may pass the updated state down to child components that may need it.
+
+To demonstrate this concept we will build the following application:
+
+Link to Codepen Solution
+
+The application has four buttons and a description section below the buttons. The buttons initially all have blue text and are all inactive. The last button that is pressed is considered the active button and its text becomes red. Lastly, the description section shows the name of the active button.
+
+We can create a Button, Details, and App Class Component to model the application:
+
+
+    class Details extends React.Component{
+      render(){
+        return <h1>{this.props.details}</h1>
+      }
+    }
+    class Button extends React.Component{
+        render(){
+            return (
+              <button>
+                {this.props.name}
+              </button>
+            )
+        }
+    }
+
+    class App extends React.Component{
+        render(){
+            return (
+                <div>
+                    <Button name="One"/>
+                    <Button name="Two"/>
+                    <Button name="Three"/>
+                    <Button name="Four"/>
+                    <Details/>
+                </div>
+
+
+            )
+        }
+    }
+This application demonstrates the need for lifting the state up because when a Button component is pressed, it needs to tell its sibling Button components to become inactive and it needs to tell the Details section to change its text. Thus, all of the state should be held in the App Class Component and binded event handlers should be passed down to the child components.
+
+Let's add some event handlers and state to the App Class Component: To accomplish this we will add a constructor() method to the App component so we can initialize its state. We will then declare an event handler named clickHandler and bind it to the App component. We will also pass down the event handlers down to the Button components. We will add an id property to each of the Button components so we can identify which Button we are pressing later on. The event handler will take in the id and name of the Button component that is clicked and will update the active Array and details section accordingly.
+
+    class App extends React.Component{
+        constructor(props){
+            super(props)
+            this.state = {activeArray:[0,0,0,0], details:""}
+            this.clickHandler = this.clickHandler.bind(this)
+        }
+
+        clickHandler(id,details){
+            var arr = [0,0,0,0]
+            arr[id] = 1
+            this.setState({activeArray:arr,details:details})
+            console.log(id,details)
+        }
+        render(){
+            return (
+                <div>
+                    <Button id = {0} active = {this.state.activeArray[0]} clickHandler = {this.clickHandler} name="bob"/>
+                    <Button id = {1} active = {this.state.activeArray[1]} clickHandler = {this.clickHandler} name="joe"/>
+                    <Button id = {2} active = {this.state.activeArray[2]} clickHandler = {this.clickHandler} name="tree"/>
+                    <Button id = {3} active = {this.state.activeArray[3]} clickHandler = {this.clickHandler} name="four"/>
+                    <Details/>
+                </div>
+
+
+            )
+        }
+    }
+Next, we will edit the Button component. We will change its text color based on whether or not the button is active and we will define its onClick attribute based on the event handler that was passed down.
+
+    class Button extends React.Component{
+        render(){
+            return (
+              <button style = {{color: this.props.active? 'red': 'blue'}} onClick={() => {this.props.clickHandler(this.props.id,this.props.name)}}>
+                {this.props.name}
+              </button>
+            )
+        }
+    }
+In the end, it should look like this:
+
+
+
+
+    class Details extends React.Component{
+      render(){
+        return <h1>{this.props.details}</h1>
+      }
+    }
+    class Button extends React.Component{
+        render(){
+            return (
+              <button style = {{color: this.props.active? 'red': 'blue'}} onClick={() => {this.props.clickHandler(this.props.id,this.props.name)}}>
+                {this.props.name}
+              </button>
+            )
+        }
+    }
+    class App extends React.Component{
+        constructor(props){
+            super(props)
+            this.state = {activeArray:[0,0,0,0], details:""}
+            this.clickHandler = this.clickHandler.bind(this)
+        }
+        clickHandler(id,details){
+            var arr = [0,0,0,0]
+            arr[id] = 1
+            this.setState({activeArray:arr,details:details})
+            console.log(id,details)
+        }
+        render(){
+            return (
+                <div>
+                    <Button id = {0} active = {this.state.activeArray[0]} clickHandler = {this.clickHandler} name="bob"/>
+                    <Button id = {1} active = {this.state.activeArray[1]} clickHandler = {this.clickHandler} name="joe"/>
+                    <Button id = {2} active = {this.state.activeArray[2]} clickHandler = {this.clickHandler} name="tree"/>
+                    <Button id = {3} active = {this.state.activeArray[3]} clickHandler = {this.clickHandler} name="four"/>
+                    <Details details = {this.state.details}/>
+                </div>
+
+
+            )
+        }
+    }
+
+
+
+ReactDOM.render(
+  <App/>,
+  document.getElementById("root")
+)
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+Game Tutorial
+
+https://codepen.io/sumit1523/pen/MdgjZg
+
+This tutorial will teach you how to create a Connect 4 game.
+
+Demo of Game/Solution
+
+Step 1: Breaking up the application into components
+Image of an HTML DOM
+
+As the above image shows, we have broken up the application into several sections:
+
+A component that represents a circle (lime green)
+A component that represents a grid cell (dark red)
+A component that represents a row of cells (teal)
+A component that represents the game board (red)
+A section that displays the game messages (blue)
+A section with a restart button ( green)
+Step 2: Creating the individual components
+To start off lets create a component that represents the circle that will be put inside each grid cell. We can accomplish this by returning a <div> tag with some styling to make it into a circle.
+
+function Circle(props){
+    var style = {
+        backgroundColor:"white",
+        border: "1px solid black",
+        borderRadius: "100%",
+        paddingTop: "98%"
+    }
+    return (
+       <div style = {style}></div>
+    )
+}
+We can test the component by rendering it to the page, be sure to add a root div in the HTML page:
+
+<div id="root"></div>
+ReactDOM.render(
+    <Circle/>,
+    document.getElementById('root')
+)
+Next, we can create a component that represents the grid cells that make up the game board. We can add some styling to make it into a square and we can embed the Circle component inside of it.
+
+function Cell(props){
+    var style = {
+        height:50,
+        width:50,
+        border:"1px solid black",
+        backgroundColor:"yellow"
+    }
+
+    return (
+        <div style = {style}>
+            <Circle/>
+        </div>
+    )
+}
+We can test the component by rendering it to the page:
+
+
+ReactDOM.render(
+    <Cell/>,
+    document.getElementById('root')
+)
+Next, we can create a component that represents a row of grid cells. We can use a for loop to push 7 cells into an array that we will insert in a <div> tag. We can add some styling to make the grid cells align horizontally.
+
+function Row(props){
+    var style = {
+          display: "flex"
+    }
+    var cells = []
+    for(let i = 0; i < 7; i++){
+        cells.push(<Cell/>)
+    }
+    return (
+        <div style = {style}>
+            {cells}
+        </div>
+    )
+}
+We can test the component by rendering it to the page:
+
+ReactDOM.render(
+    <Row/>,
+    document.getElementById('root')
+)
+Next, we can create a component that represents the game board. We can use a for loop to push 6 rows into an array that we will insert in a <div> tag.
+
+
+function Board(props){
+    var rows = []
+    for(let i = 5; i >= 0; i--){
+        rows.push(<Row/>)
+    }
+    return (
+        <div>
+            {rows}
+        </div>
+    )
+}
+We can test the component by rendering it to the page:
+
+
+ReactDOM.render(
+    <Board/>,
+    document.getElementById('root')
+)
+Lastly, we will create a Game component that encompasses all of the other components. In addition to the Board component, we will add a header for the game messages and a restart button to this component. The header and restart button are simple enough that we do not need to make them into their own components. The Game component will hold all of the application's state so we must make it a class component.
+
+
+class Game extends React.Component{
+    constructor(props){
+        super(props)
+    }
+    render(){
+        return (
+            <div>
+                <h1>Blacks Turn</h1>
+                <Board/>
+                <button>Restart</button>
+            </div>
+        )
+    }
+}
+We can test the component by rendering it to the page:
+
+
+ReactDOM.render(
+    <Game/>,
+    document.getElementById('root')
+)
+Step 3: Adding game state
+The next step is to add state to the Game component. The state should keep track of everything the game needs to know to function.
+
+The state should keep track of the following:
+
+Which player's turn it is (true for black, false for red)
+Which grid cell's have pieces and what color those pieces should be (0 for empty, 1 for black, 2 for red)
+Which player has won ( 0 for no one, 1 for black, 2 for red)
+The empty grid can be represented by a 2-D array. The 2-D array consists of an array that has 6 indexes that each have 7 indexes.
+
+Set the initial state in the constructor.
+
+
+
+var cells = []
+for(let i = 0; i < 6; i++ ){
+    cells.push(new Array(7).fill(0))
+}
+
+this.state = {player:false,cells:cells,winner:0}
+Step 4: Passing State down
+The next step is to pass down the cell states all the way down to the individual grid cells. We also need to pass down a click event handler down to the grid cells. Once this is accomplished, we will implement the basic functionality to change a cell circle's color when it is clicked.
+
+First, add a handleClick() method to the Game component:
+
+
+    handleClick(){
+        console.log("clicked")
+    }
+Also be sure to bind handleClick to the Game component in the constructor:
+
+
+    this.handleClick = this.handleClick.bind(this)
+Next, pass in the handleClick method and the this.state.cells attribute into the Board component. Also, pass in the click event handler.
+
+
+    <Board cells = {this.state.cells} handleClick = {this.handleClick}/>
+Next, pass in the arrays of length 7 from the this.state.cells 2-D array to the Row components. Also pass in the click event handler.
+
+    rows.push(<Row key = {i} row = {i} cells = {props.cells[i]} handleClick = {props.handleClick}/>)
+Next, pass in the individual cell states to the Cell components. Also pass in the click event handler.
+
+
+    cells.push(<Cell key = {i} cell = {props.cells[i]} row = {props.row} col = {i} handleClick = {props.handleClick}/>)
+Next, pass in the event handler to the onClick attribute of the <div> tag in the Cell component. Also pass in the cell state to the Circle component.
+
+    <div style = {style} onClick = {() => props.handleClick(props.row,props.col)}>
+        <Circle cell = {props.cell}/>
+    </div>
+Next, update the Circle component to change its color based on the cell state. If the cell state is 1 or 2 the circle will change to be black or red respectively.
+
+
+function Circle(props){
+    var color = "white"
+    if(props.cell == 1){
+        color = "black"
+    }
+    else if(props.cell == 2){
+        color = "red"
+    }
+    var style = {
+        backgroundColor:color,
+        border: "1px solid black",
+        borderRadius: "100%",
+        paddingTop: "98%"
+    }
+    return (
+       <div style = {style}></div>
+    )
+}
+If you open up the console and click a cell on the grid, you can see that "clicked" will be output to the console log.
+
+Next, modify the handleClick method a bit to get a more detailed idea of which cell is being clicked.
+
+    handleClick(row,col){
+        console.log("row: " + row + " | col: " + col)
+    }
+Now when a cell is clicked, the console log will display the row and column of the cell that is clicked.
+
+Now lets modify the handleClick method further to update the state of the cells when they are clicked. The slice() method is used to generate a shallow copy of the inner arrays of the 2-D cells array. These shallow copies are then used to build a new 2-D array named temp. The selected row and column of the new 2-D array is modified and then the cells state is updated to equal the temp 2-D array.
+
+    handleClick(row,col){
+        console.log("row: " + row + " | col: " + col)
+        console.log(this.state.cells)
+        var temp = [];
+        for(let i = 0; i < 6; i++){
+          temp.push(this.state.cells[i].slice())
+        }
+        temp[row][col] = 1;
+        this.setState({cells:temp})
+    }
+If you click on a grid cell now, the corresponding grid circle will now turn black. When a grid cell is clicked, it calls the handleClick() method which updates the cells state attribute. The state is then passed down until it reaches the Circle component and the circle updates its color to reflect the cell state.
+
+Step 5: Adding functionality to alternate player
+The next step is to switch the player everytime a new piece is dropped. The pieces should also alternate colors based on the player that dropped them.
+
+First, edit the handleClick method to alternate the player state everytime a piece is dropped.
+
+    this.setState({cells:temp, player: !this.state.player})
+Also, set the value of the temp state cell to equal 1 if this.player.state is true and 2 if it is false.
+
+    temp[row][col] = this.state.player? 1 : 2
+Next, edit the <h1> tag in the Game component to output whose turn it is based on the player state attribute.
+
+
+    <h1>{this.state.player? "Blacks Turn" : "Red Turn"}</h1>
+Now if you click on a grid cell, the player state will alternate.
+
+The message at the top will display which player's turn it is and the pieces dropped will have their color set based on the player that dropped them.
+
+Step 6: Adding functionality to force pieces to drop all the way down
+The next step is to force pieces to drop all the way down until they are on top of another piece or on the bottom row.
+
+To help us accomplish this, we will create a function called findAvailable(col) that will let us know which row a piece should be placed in when it is dropped in a specific column.
+
+The findAvailableRow(col) method loops through the cells state attribute and checks all of the cells in a specified column. It starts at the bottom of the column and checks each grid cell to see if a piece has been placed there. If a grid cell is empty, the method will return the row of that cell. Otherwise, it will return -1.
+
+
+  findAvailableRow(col){
+    for(var i = 0; i < 6; i++){
+      if(this.state.cells[i][col] == 0){
+        return i;
+      } 
+    }
+    return -1;
+  }
+Next, we will modify the handleClick method to update the temp state cell 2-D array based on the row returned by findAvailableRow.
+
+
+    var newRow = this.findAvailableRow(col)
+    temp[newRow][col] = this.state.player? 1 : 2
+Now if you test the application, the pieces should drop all the way down.
+
+Step 7: Adding victory detection
+The next step is to add a way to detect if a player has won.
+
+Add in these methods that help determine whether there are 4 pieces in a row:
+
+
+    checkDiagonal(row,col){
+        //find right and left tops
+        var c = this.state.cells;
+        var val = this.state.player? 2:1;
+        var rR = row;
+        var cR = col;
+        while(rR < 5 && cR < 6){
+            rR++; 
+            cR++;
+        }
+
+        while( rR >= 3 && cR >= 3){
+            if(c[rR][cR] == val && c[rR-1][cR-1] == val && c[rR-2][cR-2] == val && c[rR-3][cR-3] == val){
+                return 1
+            }
+            rR--
+            cR--
+        }   
+
+        var rL = row;
+        var cL = col;
+
+        while(rL < 5 && cL > 0){
+            rL++
+            cL--
+        }
+
+        while(rL >= 3 && cL <= 3){
+            if(c[rL][cL] == val && c[rL-1][cL+1] == val && c[rL-2][cL+2] == val && c[rL-3][cL+3] == val){
+                return 1
+            }
+            rL--
+            cL++
+        }
+        return 0
+    }
+    checkHorizontal(row,col){
+        var c = this.state.cells;
+        var i = 6;
+        var val = this.state.player? 2:1;
+
+        while( i >= 3){
+            if(c[row][i] == val && c[row][i-1] == val && c[row][i-2] == val && c[row][i-3] == val){
+                return 1
+            }
+            i--
+        }
+        return 0
+    }
+    checkVertical(row,col){
+        var c = this.state.cells;
+        var i = row;
+        var val = this.state.player? 2: 1;
+
+        if(i >= 3){
+            if(c[i][col] == val && c[i - 1][col] == val && c[i - 2][col] == val && c[i - 3][col] == val){
+                return 1
+        }
+        }
+        return 0
+
+    }
+    checkVictory(row,col){
+        return this.checkVertical(row,col)   || this.checkHorizontal(row,col) ||   this.checkDiagonal(row,col)
+
+
+    }
+Next, add in a callback to the setState method call.
+
+        this.setState({cells:temp, player: !this.state.player}, () => {
+            if(this.checkVictory(newRow,col) > 0){
+                console.log("win")
+                this.setState({winner:this.state.player?2:1})
+            }
+
+
+        })
+Also, add this to the top of the handleClick method to stop the game once someone has won.
+
+        if(this.state.winner)
+            return
+Lastly, edit the<h1> tag to display the winner if the game has ended.
+
+
+    <h1>{this.state.winner > 0 ?  this.state.winner == 1? "Black Wins":"Red Wins": this.state.player? "Blacks Turn" : "Reds Turn"} </h1>
+The game should now display the winner of the game and stop the game if someone wins.
+
+Step 8: Adding reset functionality
+The last step is to make the Restart button restart the game.
+
+First, create a method called restart() within the Game component. This method will reset the cells, winner and player state attributes.
+
+    restart(){
+        var cells = [];
+        for(let i = 0; i < 6; i++ ){
+          cells.push(new Array(7).fill(0));
+        }
+        this.setState({ player : false, cells : cells, winner:0})
+    }
+Next, edit the button element's onClick attribute to call the restart() method.
+
+
+    <button onClick = { () => this.restart()}>Restart</button>
+Pressing the restart button should now restart the game.
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+Lists
+ 
+Rendering arrays of React Elements
+JSX will render an array of React Elements as long as there is at least one element enclosing all of the array elements. The array elements will be inserted into the enclosing element:
+
+For example, it is possible to render multiple components at the same time using a for loop with JSX:
+
+var elements = [] 
+var array = [1,2,3,4,5]
+
+for(let i = 0; i < array.length; i++){
+   elements.push(<li>{array[i]}<li/>)
+}
+
+
+ReactDOM.render(
+  <ol>{elements}</ol>,
+  document.getElementById('root')
+)
+-----------------------------------------------------------------------------------------
+Using Map() to render arrays of React Elements
+The map() method is often used to create an array of React Elements. The map() method is called on an array and returns a new array with a provided function applied to each element in the original array.
+
+Example of using the map() method to return an array of React Elements:
+
+
+var array =[
+  {product:"Apple", price:3},
+  {product:"Banana", price:1},
+  {product:"Carrot", price:2},
+  {product:"Donuts", price:5},
+  {product:"Eggplant", price:4}
+]
+
+var elements = array.map( (item) => {
+  return <li>Product: {item.product} | Price: ${item.price}  </li>
+})
+
+ReactDOM.render(
+  <ol>{elements}</ol>,
+  document.getElementById('root')
+)
+The map() method can also be directly used inside a JSX expression:
+
+ReactDOM.render(
+  <ol>{
+      array.map( (item) => 
+          <li>Product: {item.product} | Price: ${item.price} </li>
+      )}
+  </ol>,
+  document.getElementById('root')
+)
+-----------------------------------------------------------------------------------------
+Adding Keys to List Items
+React uses Keys to help render list items quickly. Keys should be a string that uniquely identifies a list item from the other items on the list, such as an ID attribute.
+
+Example of using an ID as a key value:
+
+var array =[
+  {id: 100, product:"Apple", price:3},
+  {id: 101, product:"Banana", price:1},
+  {id: 102, product:"Carrot", price:2},
+  {id: 103, product:"Donuts", price:5},
+  {id: 104, product:"Eggplant", price:4}
+]
+
+var elements = array.map( (item) => {
+  return <li key={item.id}>Product: {item.product} | Price: ${item.price}  </li>
+})
+
+ReactDOM.render(
+  <ol>{elements}</ol>,
+  document.getElementById('root')
+)
+If your array items do not have anything that can uniquely identify them, you can use the item index as a last resort for the key value. The drawback to using indexes as keys is that list item reordering is slow to rerender.
+
+Example of using the item index as a key value:
+
+var array =[
+  {product:"Apple", price:3},
+  {product:"Banana", price:1},
+  {product:"Carrot", price:2},
+  {product:"Donuts", price:5},
+  {product:"Eggplant", price:4}
+]
+
+//the item index is the second argument to the map() method
+var elements = array.map( (item,index) => {
+  return <li key={index}>Product: {item.product} | Price: ${item.price}  </li>>
+})
+
+ReactDOM.render(
+  <ol>{elements}</ol>,
+  document.getElementById('root')
+)
+-----------------------------------------------------------------------------------------
+Building a List Component
+It is useful to be able to build a React Component that can dynamically generate a list from an array property that is passed into it.
+
+
+class ProductList extends React.Component{
+  constructor(props){
+    super(props)
+  }
+  render(){
+    var elements = this.props.productArray.map( (item,index) => {
+      return <li key={item.id}>Product: {item.product} | Price: ${item.price}  </li>
+    })
+    return <ol>{elements}</ol>
+  }
+}
+
+var array =[
+  {id: 100, product:"Apple", price:3},
+  {id: 101, product:"Banana", price:1},
+  {id: 102, product:"Carrot", price:2},
+  {id: 103, product:"Donuts", price:5},
+  {id: 104, product:"Eggplant", price:4}
+]
+
+
+ReactDOM.render(
+  <ProductList productArray = {array}/>,
+  document.getElementById('root')
+)
+-----------------------------------------------------------------------------------------
+Extracting List Items
+Each list item may be extracted into its own React Component to make the code more maintainable. If the list items are extracted, the keys do not need to be passed down to the list item components. Keys are only necessary when React Elements are generated dynamically using arrays.
+
+Example:
+
+function ListItem(props){
+  //don't need to add a key to 
+  return <li>Product: {props.product} | Price: ${props.price}  </li>
+  
+}
+
+
+class ProductList extends React.Component{
+  render(){
+    var elements = array.map( (item,index) => {
+      //need to add a key here
+      return <ListItem key={item.id} product={item.product} price = {item.price}/>
+    })
+
+    return (
+      <ol>
+        {elements}
+      </ol>
+    )
+
+  }
+
+}
+
+var array =[
+  {id: 100, product:"Apple", price:3},
+  {id: 101, product:"Banana", price:1},
+  {id: 102, product:"Carrot", price:2},
+  {id: 103, product:"Donuts", price:5},
+  {id: 104, product:"Eggplant", price:4}
+]
+
+ReactDOM.render(
+  <ProductList productArray = {array}/>,
+  document.getElementById('root')
+)
+-----------------------------------------------------------------------------------------
+
+Forms
+ 
+Controlled Components
+HTML form elements such as inputs, text areas, and select fields naturally keep some internal state. When we use HTML form elements in React, we tie that natural state to the React Component state so that all of the state can be maintained by a single source.
+
+We accomplish this by doing the following two steps:
+
+Whenever the input value is changed, call an event handler to update the component state to the new input value
+Re render the the React Element with its value attribute set to the updated state input value
+Form elements that have their state's controlled by React in his manner are called Controlled Components.
+------------------------------------------------------------------------------------------
+Controlling Input fields
+To turn an input field into a Controlled Component, we must first declare an event handler that will update the state input value whenever the form input value is changed.
+
+The event.target.value attribute can be used to obtain the form input value:
+
+    handleChange(event){
+        this.setState({value: event.target.value})
+    }
+We then must attach the event handler to the <input> element and set the input value equal to the state input value:
+
+    render(){
+        return (
+            <input type = "text" value = {this.state.value} onChange = {this.handleChange}/>
+        )
+    }
+Lastly, we must not forget to bind the event handler to the component instance and also declare the initial state value:
+
+    constructor(props){
+        super(props)
+        this.state = {value: ''}
+        this.handleChange = this.handleChange.bind(this)
+    }
+Putting it all together:
+
+class ControlledInput extends React.Component{
+
+    constructor(props){
+        super(props)
+        this.state = {value: ''}
+        this.handleChange = this.handleChange.bind(this)
+    }
+    handleChange(event){
+        this.setState({value: event.target.value})
+    }
+    render(){
+        return (
+            <input type = "text" value = {this.state.value} onChange = {this.handleChange}/>
+        )
+    }
+}
+------------------------------------------------------------------------------------------
+Controlling Checkboxes
+Checkboxes use a checked attribute instead of a value attribute.
+
+Example:
+
+class ControlledInput extends React.Component{
+
+    constructor(props){
+        super(props)
+        this.state = {checked: false}
+        this.handleChange = this.handleChange.bind(this)
+    }
+    handleChange(event){
+        this.setState({checked: event.target.checked})
+    }
+    render(){
+        return (
+            <input type = "checkbox" checked = {this.state.checked} onChange = {this.handleChange}/>
+        )
+    }
+}
+------------------------------------------------------------------------------------------
+Controlling TextArea fields
+Controlling TextAreas is similar to controlling Input Fields in React:
+
+class ControlledTextArea extends React.Component{
+
+    constructor(props){
+        super(props)
+        this.state = {value: ''}
+        this.handleChange = this.handleChange.bind(this)
+    }
+    handleChange(event){
+        this.setState({value: event.target.value})
+    }
+    render(){
+        return (
+            <textarea type = "text" value = {this.state.value} onChange = {this.handleChange}/>
+        )
+    }
+}
+------------------------------------------------------------------------------------------
+Controlling Select Tags
+Controlling Select Tags is similar to controlling Input Fields in React:
+
+
+class ControlledSelect extends React.Component{
+
+    constructor(props){
+        super(props)
+        this.state = {value: 'apple'}
+        this.handleChange = this.handleChange.bind(this)
+    }
+    handleChange(event){
+        this.setState({value: event.target.value})
+    }
+    render(){
+        return (
+          <select value={this.state.value} onChange={this.handleChange}>
+            <option value="apple">apple</option>
+            <option value="banana">banana</option>
+            <option value="carrot">carrot</option>
+            <option value="donuts">donuts</option>
+          </select>
+        )
+    }
+}
+Select Components can also have their options dynamically generated using the map() method. Example:
+
+
+class ControlledSelect extends React.Component{
+
+    constructor(props){
+        super(props)
+        this.state = {value: 'apple'}
+        this.handleChange = this.handleChange.bind(this)
+    }
+    handleChange(event){
+        this.setState({value: event.target.value})
+    }
+    render(){
+        var array = ["apple","banana","carrot","donuts"]
+        var options = array.map( (item) =>
+            <option value = {item}>{item}</option>
+        )
+        return (
+          <select value={this.state.value} onChange={this.handleChange}>
+            {options}
+          </select>
+        )
+    }
+}
+------------------------------------------------------------------------------------------
+Handling Multiple Inputs
+If your form has multiple inputs, you can set each of their values to a different attribute on the component state. It is useful to use ES6's computed property name feature to accomplish this.
+
+Example:
+
+class ControlledMultiple extends React.Component{
+
+    constructor(props){
+        super(props)
+        this.state = {value: 'apple'}
+        this.handleChange = this.handleChange.bind(this)
+    }
+    handleChange(event){
+
+
+        this.setState({[event.target.name]: event.target.value})
+    }
+    render(){
+        var array = ["apple","banana","carrot","donuts"]
+        var options = array.map( (item) =>
+            <option value = {item}>{item}</option>
+        )
+        return (
+            <form>
+                <input name="inputName" type = "input" value = {this.state.inputName} onChange = {this.handleChange}/>
+                <textarea name="textAreaName" type = "text" value = {this.state.textAreaName} onChange = {this.handleChange}/>
+
+                <select name = "selectName" value={this.state.selectName} onChange={this.handleChange}>
+                    {options}
+                </select>
+            </form>
+        )
+    }
+}
+------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+
+Application
+
+https://codepen.io/sumit1523/pen/mYbWGq?editors=1010
+
+In this tutorial we are are going to learn how to build an application that allows users to post topics and upvote/downvote the topics.
+
+Link to Demo/Solution
+
+Image of an HTML DOM
+
+Step 1: Breaking up the application into components
+Image of an HTML DOM
+
+As the above image shows, we have broken up the application into several sections:
+
+A section that contains an input field(red)
+A section that contains a submit button(brown)
+A component that contains a list of posts(orange)
+A subcomponent that represents a post(blue)
+A sub-subcomponent that represents a square button(red)
+A sub-subcomponent that represents text (green)
+Step 2: Creating the PostList Component
+Creating the PostButton Component
+To start off we are going to create the component that represents the square buttons that are a part of each of the posts. We are going to add some style to it and display its label property.
+
+
+function PostButton(props){
+    var style = {
+        width:24,
+        height:24
+    }
+    return (
+        <button style = {style}>{props.label}</button>
+    )
+}
+Add a <div> tag to the HTML file and give it an id attribute equal to "root".
+
+
+<div id="root"></div>
+Test the PostButton component by rendering it to the page.
+
+ReactDOM.render(
+    <PostButton/>,
+    document.getElementById("root")
+)
+Creating the PostText Component
+Next, we are going to create the component that represents the text areas that are a part of each of the posts. We are going to add some style to it and display its label property. Its width will vary based on its width property.
+
+function PostText(props){
+    var style = {
+        border:"1px solid black",
+        width: props.width
+    }
+    return (
+        <div style = {style}>{props.text}</div>
+    )
+}
+Test the PostText component by rendering it to the page.
+
+ReactDOM.render(
+    <PostText width ="50" text="Test"/>,
+    document.getElementById("root")
+)
+Creating the Post Component
+Next, we are going to create the component that represents the posts that go in the list of posts. We are going to add some styling to make it display its subcomponents horizontally. We are also going to pass in a title and score property down to its PostText components.
+
+function Post(props){
+    var style = {
+        display:"flex"
+    }
+    return (
+        <div style = {style}>
+            <PostButton label = "x"/>
+            <PostText text = {props.title} width = "200"/>
+            <PostButton label = "+" />
+            <PostText text = {props.score} width = "20"/>
+            <PostButton label = "-"/>
+        </div>
+    )
+}
+Test the Post component by rendering it to the page.
+
+ReactDOM.render(
+    <Post title="Post Title" score = 0/>,
+    document.getElementById("root")
+)
+Creating the PostList Component
+Next, we are going to create the component that represents the list of posts. We are going to accomplish this by using the map() method to generate a Post component for each item in the componets postList property array. We will wrap all of the Post components in a <ol> tag.
+
+
+function PostList(props){
+    return (
+        <ol>
+        {
+            props.postList.map((item,index) => 
+                <Post key = {index} 
+                      title = {item.title} 
+                      score = {item.score}
+                />
+             )
+         }
+        </ol>
+    )  
+}
+Test the PostList component by rendering it to the page with some test data.
+
+ReactDOM.render(
+    <PostList postList = {[1,2,3,4,5]}/>,
+    document.getElementById("root")
+)
+Step 3: Creating a Controlled Component from the input field
+To start off we are going to create an App component that will hold all of the other components.
+
+
+class App extends React.Component{
+    constructor(props){
+        super(props)
+    } 
+    render(){
+        return (
+            <div>
+                App
+            </div>
+        )
+    }
+}
+Test the App component by rendering it to the page.
+
+ReactDOM.render(
+    <App/>,
+    document.getElementById("root")
+)
+Next, we are going to initialize the App component's state. The App component will have two state attributes: one to hold the value of the input element and one to hold the array of post data.
+
+Add this to the constructor() method:
+
+    this.state = {value:"", items : []}
+Next, we are going to add an input element and make it a controlled component by tyings its value to the component state. We will accomplish this by declaring a handleChange() method that updates the components state whenever the input element's value is changed. We also have to bind the handleChange method to the App component so that the method refers to the right place.
+
+
+class App extends React.Component{
+    constructor(props){
+        super(props)
+        this.state = {value:"", items : []}
+    } 
+    handleChange(event){
+        this.setState({value:event.target.value})
+        console.log(this.state.value)
+
+    }
+    render(){
+        return (
+            <div>
+                <input value = {this.state.value} onChange = {this.handleChange.bind(this)}/>
+            </div>
+        )
+    }
+}
+Test the input field to make sure that it is tying its value back to the component state by typing in some characters and viewing the console.
+
+Step 4: Adding values to the Post List
+Next, are are going to add the functionality to add items to the state array.
+
+To start, we are going to declare an event handler called addItem() to the App component. The method first makes a copy of the current items state array by using the slice() array. Then it takes in the value state attribute and truncates it to 20 characters using the substring() method. Then it creates an object containing the truncated string as a title and the value 0 as its score and adds it to the copied items array. Then it sorts the copied items array in descending order of score. Lastly, it updates the state to equal the sorted copied items array and sets the value state attribute back to an empty string.
+
+Add to App component:
+
+    addItem(){
+        var itemsCopy = this.state.items.slice()
+        var truncatedString = this.state.value.substring(0,20);
+        itemsCopy.push({"title":truncatedString,"score":0})
+        itemsCopy.sort((a,b)=>{
+          return b.score - a.score;
+        })
+        this.setState({items:itemsCopy,value:""})
+    }
+Now that the addItem() event handler has been created, we need to create a submit button that will call the addItem() method when it is clicked. We will add it below the input element in the render() method of the App component.
+
+Edit the button element in the App render() method:
+
+    <button onClick = { () => this.addItem()}>Submit</button>
+Now lets add the PostList component inside the render() method of the App component. We will supply its postList attribute with the this.state.items array that contains all of the post data.
+
+Add to the App render() method:
+
+    <PostList postList = {this.state.items}/>
+Test the App component by typing something in the input field and pressing the submit button. A post should be added to the PostList with a title equal to the string entered in the input field.
+
+Step 5: Updating the post score
+Next, we are going to add the functionality to update the post score when the + or - buttons are pressed.
+
+To start, add a method called updateScore() to the App component. The updateScore() method should make a copy of the the items state attribute by using the slice() method. It will then reference a specific index of the copied items array and update that items score based on the val argument. The copied items array is then sorted and the state is set to equal the sorted copied array.
+
+Add to App component:
+
+    updateScore(index,val){
+        var itemsCopy = this.state.items.slice()
+        itemsCopy[index].score += val
+        itemsCopy.sort((a,b) => {
+            return b.score - a.score
+        })
+        this.setState({items:itemsCopy})
+    }
+The updateScore() method needs to be passed down all the way to the button elements.
+
+Pass the updateScore() method into the PostList component. Do not forget to bind the updateScore() method to the App component before passing it in.
+
+Edit in App render() method:
+
+    <PostList postList = {this.state.items}
+                updateScore = {this.updateScore.bind(this)}  
+    />
+Create two attributes on the Post component that is rendered in the PostList component. The first will be an attribute named incrementScore that calls updateScore(index,1) which increments the score of the specified index in the items state array by 1. The second will be an attribute named decrementScore that calls updateScore(index,-1) which decrements the score of the specified index in the items state array by 1.
+
+Edit in PostList component:
+
+    <Post key = {index} 
+            title = {item.title} 
+            score = {item.score}
+            incrementScore = {() => props.updateScore(index,1)}                         
+            decrementScore = {() => props.updateScore(index,-1)} 
+    />
+Next, create a handleClick attribute on the + and - PostButtons. The + PostButton should have its handleClick attribute set equal to incrementScore, while the - PostButton should have its handleClick attribute set to equal decrementScore.
+
+Edit in Post component:
+
+    <PostButton label = "+" handleClick = {props.incrementScore}/>
+    <PostButton label = "-" handleClick = {props.decrementScore}/>
+Lastly, edit the button element in the PostButton component to call handleClick() when it is clicked. This should make the button either increment or decrement its post's score.
+
+Edit in PostButton component:
+
+    <button style = {style} onClick = { () => props.handleClick()}>{props.label}</button>
+Test the + and - buttons by to see if they increment and decrement their post's scores. The PostList should automatically sort itself by descending post score whenever a post score is updated.
+
+Step 6: Removing posts
+Next, we are going to add the functionality to remove posts.
+
+To start, we are going to add a method called removeItem() to the App component. The removeItem() method will make a copy of the items state array by using the slice() method. It will then remove the specified index using the splice() method and then sort the array by descending score. It will then update the state to equal the sorted copied items array.
+
+Add to App component:
+
+    removeItem(index){
+        var itemsCopy = this.state.items.slice()
+        itemsCopy.splice(index,1);
+        itemsCopy.sort((a,b) => {
+            return b.score - a.score
+        })
+
+        this.setState({items:itemsCopy})
+    }
+The removeItem() method needs to be passed down all the way to the button elements.
+
+Pass the removeItem() method into the PostList component. Do not forget to bind the removeItem() method to the App component before passing it in.
+
+Edit in App component render() method:
+
+    <PostList postList = {this.state.items}
+                updateScore = {this.updateScore.bind(this)}  
+                removeItem = {this.removeItem.bind(this)}
+    />
+Next, add a removeItem attribute in the Post component that is rendered in the PostList component.
+
+The removeItem attribute should call the removeItem() method that was passed in with the PostList's properties.
+
+Edit in PostList component:
+
+    <Post key = {index} 
+            title = {item.title} 
+            score = {item.score} 
+            incrementScore = {() => props.updateScore(index,1)}                         
+            decrementScore = {() => props.updateScore(index,-1)} 
+            removeItem = {() => props.removeItem(index)}/>
+Next, create a handleClick attribute on the "x" PostButton. The "x" PostButton should have its handleClick attribute set equal to the removeItem() method that was passed in with PostButton's properties.
+
+Edit in Post component:
+
+    <PostButton label = "x" handleClick = {props.removeItem}/>
+Test the "x" button to see if the posts are able to be removed.
+
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
