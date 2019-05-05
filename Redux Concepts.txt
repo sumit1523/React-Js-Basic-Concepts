@@ -1,0 +1,1011 @@
+What is Redux
+
+https://codesandbox.io/s/o7jwqr524q
+
+Redux is a third party state management libary that makes it easier to access and modify your application state. Redux is often used with React, but it can be used with any other front end library as well.
+
+Redux simplifies state management by using the following 3 concepts:
+
+Store - a single object that holds all your application state
+Actions - categorized events that trigger a change to your application state
+Reducers - functional definitions of how the application state should change
+These concepts work together in the following way:
+
+All application data is held inside a store
+A user or timed event triggers an action to be dispatched.
+The reducer figures out what type of action was dispatched and updates the store accordingly
+The store now contains updated data.
+Redux Flow Diagram
+Why should you use Redux with React?
+Globally accessible state
+One annoying thing about React is that state has to be passed down from parent component to child component in order for the child component to use it. This gets increasingly frustrating when you have many components nested within each other. Imagine passing state from a parent component down to through five components to get to the last child component. It would be a bit tedious to manually set the state as the props of each of the child components. This is one of the problems that Redux solves. Redux has a single store that holds all of the application data that can be accessed by any component. Redux does this by providing plug in that allows you to pass in part of store data as props to any of your React components.
+
+Globally accessible event handlers
+One thing that is even more annoying than passing down state across multiple components is passing down event handlers, since they are a bit more complex. However, you no longer have to do that with Redux. Redux has a plug in that allows you to pass any dispatched action as a prop to your components.
+
+Easier troubleshooting and organization
+Redux makes it much easier to organize all your state management logic. Instead of having a bunch of helper functions spread out across multiple class components, all of your state management logic is kept inside a reducer. This also makes it much easier to troubleshoot. If something doesn't behave as it should, you can check what action caused it to go wrong. Once you figure out what action went wrong, simply check the appropriate section in the reducer and find the bug.
+
+When should you use Redux and when should you not?
+My advice is to not use Redux if you can accomplish your project with plain old React. If it gets too annoying to pass down state through parent components to child components, or if you have too many types of event handlers to keep track of, then it might be a good idea to use Redux. Redux was designed for complicated applications like Facebook or Twitter. If you are making a simple todo app then you probably don't need Redux.
+
+--------------------------------------------------------------------------------------
+
+Setting up Redux locally
+
+If you haven't already done so, install create-react-app and then create a new React project:
+
+npm install -g create-react-app
+create-react-app project-name
+cd project-name
+Redux does not come installed with React, so we must install the redux library with the following command:
+
+npm install `redux` `react-redux` 
+After that, you can import the Redux methods into your app.js file:
+
+
+import React from 'react'
+import { render } from 'react-dom'
+import { createStore } from 'redux'
+
+//...
+
+Try copying and pasting this basic example into app.js to get started:
+
+import React from "react";
+import ReactDOM from "react-dom";
+import { createStore, combineReducers } from "redux";
+
+//action creator
+const addItem = item => {
+  return {
+    type: "ADD_ITEM",
+    item: item
+  };
+};
+
+//reducer
+const reducer = (state = [], action) => {
+  switch (action.type) {
+    case "ADD_ITEM":
+      return [...state, action.item];
+    default:
+      return state;
+  }
+};
+
+var store = createStore(reducer);
+
+console.log(store.dispatch(addItem("a")));
+console.log(store.getState());
+console.log(store.dispatch(addItem("b")));
+console.log(store.getState());
+console.log(store.dispatch(addItem("c")));
+console.log(store.getState());
+
+function App() {
+  return (
+    <div>
+      <h1>Hello World</h1>
+    </div>
+  );
+}
+
+
+export default App;
+--------------------------------------------------------------------------------------
+Setting up Redux using CodeSandbox
+Go to codesandbox.io and create a new React project.
+
+Under Dependencies, click Add Dependency and add redux.
+
+After that, you can import Redux methods into your index.js file:
+
+
+import React from 'react'
+import { render } from 'react-dom' 
+import { createStore } from 'redux'
+
+//...
+Try running the following code in index.js to get started:
+
+import React from "react";
+import ReactDOM from "react-dom";
+import { createStore, combineReducers } from "redux";
+
+//action creator
+const addItem = item => {
+  return {
+    type: "ADD_ITEM",
+    item: item
+  };
+};
+
+//reducer
+const reducer = (state = [], action) => {
+  switch (action.type) {
+    case "ADD_ITEM":
+      return [...state, action.item];
+    default:
+      return state;
+  }
+};
+
+var store = createStore(reducer);
+
+console.log(store.dispatch(addItem("a")));
+console.log(store.getState());
+console.log(store.dispatch(addItem("b")));
+console.log(store.getState());
+console.log(store.dispatch(addItem("c")));
+console.log(store.getState());
+
+function App() {
+  return (
+    <div className="App">
+      <h1>Hello CodeSandbox</h1>
+      <h2>Start editing to see some magic happen!</h2>
+    </div>
+  );
+}
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
+
+--------------------------------------------------------------------------------------
+Three Principles of Redux
+There are three principles of Redux that you should always keep in mind when developing applications with Redux.
+
+Single source of truth
+All data is kept in a single store. This keeps things much more organized and allows you to load all your data from an external source in one go.
+
+State is read-only
+You should never modify the store directly. You should only modify the state indirectly by dispatching an action. This makes it so state changes don't happen randomly and so you know exactly what action caused a state change.
+
+Changes are made with pure functions
+All reducers should be pure functions that take in the previous state and the action, and return a new state. Reducers should not mutate the original state. For example, instead of pushing an item onto an existing array and then returning it. A reducer should create a new array, copy all the contents over, and then add the new array item. Why is this so important? Redux triggers changes to React components whenever there is a new state object loaded into the store. If you mutate the old state object instead of making a new one, Redux won't see the change and will not update the React components.
+--------------------------------------------------------------------------------------
+Actions
+https://codesandbox.io/s/qqy7z1rw76
+Actions are categorized events that trigger changes to your state. Actions have a type and contain some kind of payload information. Once actions are dispatched, the Reducer figures out what to do with the action type and payload and updates the state accordingly.
+
+To implement an action, we can use a simple JavaScript object that contains a type and a payload. The type attribute is used to identify the action and is usually a capitalized string. It is a common practice to separate out the action type into a const variable. The payload attribute is used to attach any type of data (string, number, object, etc.) to the action, but it is recommended to send as little data as possible to get the job done. The payload attribute can have any name or format as long as you reference it accordingly in the Reducer.
+
+Action:
+
+
+const ADD_ITEM = 'ADD_ITEM' //const variable to hold action type
+
+var action = {
+  type: ADD_ITEM, //action type
+  item: 'Apple' //payload
+}
+
+Action Creators
+Action creators are simply functions that return actions. They are used so you don't have to type out the entire action object every time you want to dispatch an action.
+
+Action Creator:
+
+
+const addItem = (item) => {
+  return {
+      type: ADD_TODO,
+      item: item
+  }
+}
+
+addItem('apple') // this creates an action object
+Dispatching Actions
+To dispatch an action, simply use Redux's store.dispatch(action) method.
+
+  store.dispatch(addItem('apple'))
+However, we can't dispatch actions without having a store yet. More information on this will be provided in later chapters.
+--------------------------------------------------------------------------------------
+Reducers
+
+https://codesandbox.io/s/32rjmlrkr6
+Reducers are just functions that define how the state should change after an action is dispatched. In this lesson we will be building a Reducer for a simple shopping cart application.
+
+Reducers must be pure functions
+A reducer must be a pure function that takes in the previous state and a dispatched action as inputs and returns the new state as an output.
+
+
+const items = (state, action ) => {
+ //return new state based on previous state and action
+}
+
+A pure function should constantly return the same output when given the same input. There should never be any API calls, calls to Math.random() or Date.now(), mutations to the previous state, or any other surprises. It should just be a functional calculation. Redux triggers changes to React components whenever there is a new state object loaded into the store. So if you mutate the old state object instead of making a new one, Redux won't see the change and will not update the React components.
+
+
+State shape and initial state
+It is important to understand the shape of the state tree before coding up a reducer. Otherwise, how will we know how to update the state if we don't know how the state is supposed to be organized. In the shopping cart example, the shape tree will look like the following array:
+
+  ['apple','banana','etc...']
+
+The state argument will be undefined the first time our reducer is called, so it is important to provide a default initial state. We can do so by using the following syntax:
+
+
+
+const items = (state = [], action ) => {
+ //return new state based on previous state and action
+}
+
+
+Handling Actions
+We can use a switch statement to handle different types of actions:
+
+const items = (state = [], action) => { //providing an empty array as a default value to the state argument in case its undefined
+  switch(action.type){
+    case 'ADD_ITEM': 
+      //return new state with added item 
+    case 'DELETE_ITEM':
+      //return new state with deleted item 
+    default:
+      return state //otherwise, just return the old state
+  }
+}
+We can then implement the logic to update the state based on the dispatched action.
+
+
+
+Implementing ADD_ITEM
+The ADD_ITEM action will look like the following:
+
+ADD_ITEM:
+
+{
+  type: 'ADD_ITEM',
+  item: 'apple' //any string value
+}
+To implement ADD_ITEM, we can generate a new array, load in the previous state's items using the spread operator, and then add in the new item from the action.
+
+    case 'ADD_ITEM':
+      return [...state, action.item]  
+	  
+	  
+Implementing DELETE_ITEM
+The DELETE_ITEM action will look like the following:
+
+DELETE_ITEM:
+
+{
+  type: 'DELETE_ITEM',
+  index: 0 //any index number
+}
+To implement DELETE_ITEM, we can generate a new array, load in the previous state's items up to the removed index, and then load in the previous state's items that come after the removed index.
+
+    case 'DELETE_ITEM':
+      return [...state.slice(0,action.index),...state.slice(action.index + 1)]
+Handling invalid actions
+Invalid actions can be caught with the default case of the switch statement, which will just return the original state.
+
+    default:
+      return state //otherwise, just return the old state
+	  
+	  
+Helpful methods for pure functions
+There are several JavaScript methods that are helpful when writing pure functions. You should take a closer look at the following functions:
+
+
+
+array.slice() - used for returning a new array that contains a portion of an existing array
+var array = [0,1,2,3,4,5,6]
+var newArray = array.slice(0,5)
+console.log(newArray) 
+// [0,1,2,3,4]
+
+
+Object.assign - used for creating a new object and merging over other objects into the new object
+var oldState = { id: 123, value: 'abc'}
+var newState = Object.assign({}, oldObject, {value:'new value'})
+console.log(newState)
+// {id: 123, value: 'new value'}
+
+
+... (spread operater) - used for loading in data from an existing object or array
+var oldState = { id: 123, value: 'abc'}
+var newData = {value:'new value'}
+var newState = {...oldObject, ...newData}
+console.log(newState)
+// {id: 123, value: 'new value'}
+var array = [0,1,2,3,4]
+var newArray = [...array, 5, 6]
+console.log(newArray)
+//[0,1,2,3,4,5,6]
+--------------------------------------------------------------------------------------
+
+Store
+https://codesandbox.io/s/vqmq0n8x55
+The Store is the object that holds all of your application state. It is important to only have a single store.
+
+Creating a Store
+You can create a store using the createStore(reducer,[preloadedState],[enhancer]) method from the Redux library. The createstore takes the following arguments:
+
+reducer - reducer that describes how dispatched actions should update the state
+preloadedState - optional initial state
+enhancer - optional middleware
+You can import createStore by doing the following:
+
+import {createStore} from 'redux'
+You can create a store by calling the createStore method with a reducer:
+
+const reducer = (state, action) => {
+ //return updated state
+}
+
+const store = createStore(reducer)
+Getting state from a store
+You can access the state from the store using the store.getState() method:
+
+var state = store.getState()
+console.log(state)
+// {...}
+
+Dispatching actions to update the store
+You can dispatch actions using the store.dispatch(action) method:
+
+  store.dispatch(addItem('apple')) //'apple' is now added to the item array
+try running this code to add a few items and delete a few items and log the store!
+
+Subscribing to store updates
+The store.subscribe() method is used to trigger a function whenever the store updates.
+
+Here is an example to log the store everytime it updates:
+
+//trigger a console log every time the store updates
+const unsubscribe = store.subscribe(() => console.log(store.getState()));
+
+//stop subscribing to store updates
+unsubscribe()
+To unsubscribe, call the method that is returned by store.subscribe():
+--------------------------------------------------------------------------------------
+
+Advanced Reducers
+https://codesandbox.io/s/k5p8n6wm23
+As your application grows to have more and more actions and an increasingly complicated state tree, it becomes important to split up your reducers into multiple reducers that handle separate parts of your application state.
+
+In this lesson, we will be building a more complicated reducer for a more complicated shopping cart application. User's should be able to add and and remove items from their shopping cart but this time the items will have prices as well as product names. User's should also have the option to sort the shopping cart items by alphabetical order or by price. Lastly, user's should also be able to use a coupon to get certain percentage discount off all items.
+
+Designing the actions
+We must first design the actions before we can design the reducers. There are four distinct actions that a user can take:
+
+Add item to the cart
+Delete item from the cart
+Set sort by filter
+Set coupon discount percentage
+We can turn these user scenarios into the following actions:
+
+//ADD_ITEM
+{
+  type: 'ADD_ITEM',
+  item: {
+    name: string,
+    price: double    
+  }
+}
+
+//DELETE_ITEM
+{
+  type: 'DELETE_ITEM',
+  index: integer //index value   
+}
+
+//SET_FILTER
+{
+    type: 'SET_FILTER',
+    filter: string  //either none, alphabetical or price
+}
+
+//SET_DISCOUNT
+{
+  type: 'SET_DISCOUNT',
+  discount: double //percentage amount
+}
+
+
+Designing the state tree
+We must next design the state tree before we can design the reducers. The state tree should be one giant object that contains an array for the shopping cart items and attributes to hold the values for the filter type and discount amount.
+
+State tree:
+
+{
+  items: [],
+  filter: value, //either none, alphabetical or price,
+  discount: value //percentage amount
+}
+It is important to only keep track of necessary data. There is no need to add an additional state attribute, if you can already calculate it from the existing state. For example, there shouldn't be a discounted items array since we can calculate that from the items array and the discount attribute.
+
+
+
+Designing the reducers
+Let's start by trying to create one giant reducer. In the process, you will see why it is a better idea to split it up into smaller reducers.
+
+var initialState = {
+  items: [],
+  filter: 'none'
+  discount: 0
+}
+
+const giantReducer = (state = initialState, action) =>{
+  switch(action.type){
+    case 'ADD_ITEM':
+      return Object.assign({},state, 
+        items: [...state.items, action.item ]
+      })
+    case 'DELETE_ITEM':
+      return Object.assign({},state, 
+        items: [...state.slice(0,action.index),...state.slice(action.index + 1)]
+      })
+    case 'SET_FILTER':
+      return Object.assign({},state, 
+        filter: action.filter
+      })
+    case 'SET_DISCOUNT':
+      return Object.assign({},state, 
+        discount: action.discount
+      })
+  }
+}
+
+It was a bit annoying to have to use Object.assign() to generate the entire state tree when we only needed to modify one state attribute per action. It will also only get more difficult as we add more actions and as our state tree gets more complicated. Luckily, we can split the reducer up into several reducers that each handle one attribute of the state tree.
+
+We can break out ADD_ITEM and DELETE_ITEM into their own reducer because they both only affect the items attribute. It makes it a bit easier to maintain since we can just return an array instead of the whole state tree:
+
+//items reducer
+const items = (state = [], action) => { //notice default state is now an array 
+  switch(action.type){
+    case 'ADD_ITEM':
+      return [...state.items, action.item ]
+      })
+    case 'DELETE_ITEM':
+      return [...state.slice(0,action.index),...state.slice(action.index + 1)]
+      })
+    default:
+      return state      
+  }
+}
+We can also break out SET_FILTER and SET_DISCOUNT into their separate reducers as well:
+
+//items reducer
+const filter = (state = [], action) => { //notice default state is now an array 
+  switch(action.type){
+    case 'ADD_ITEM':
+      return action.filter
+    default:
+      return state      
+  }
+}
+
+const discount= (state = 'none', action) => { //notice default state is now an array 
+  switch(action.type){
+    case 'SET_DISCOUNT':
+      return action.discount
+    default:
+      return state      
+  }
+}
+We can combine these reducers together by returning an object and placing the child reducers next to the attributes they belong to. The small reducers will return the new state for the attribute they are in charge of and then the encompassing reducer will group them all together. We also no longer need an initial state for the encompassing reducer as long as the all of the child reducers have initial states. It is a good practice to have a separate reducer for each top level attribute in your state tree.
+
+
+const giantReducer = (state, action) =>{ //don't need an initial state anymore if the child reducers all have initial states
+  {
+    items: items(state.items,action),
+    filter: filter(state.filter,action),
+    discount: discount(state.discount,action)
+  }
+}
+
+
+Redux even has a combineReducers method that does the combining for us!
+
+The combineReducers() method does the same thing as the example above:
+
+const reducer = combineReducers({
+  items,
+  filter,
+  discount,
+})
+You will notice that the reducer name ends up being the attribute name in the state. If you want to differ the reducer name and the attribute nanmes you can do the following:
+
+const reducer = combineReducers({
+  a : items,
+  b : filter,
+  c : discount,
+})
+The result of this will be the same as the following:
+
+const giantReducer = (state, action) =>{ 
+  {
+    a: items(state.a,action), 
+    b: filter(state.b,action),
+    c: discount(state.c,action)
+  }
+}
+
+
+Importing Reducers from a separate file
+Its a common practice to create all of your reducers in a separate file and then import them into your main file to be combined with combineReducers().
+
+import { combineReducers, createStore } from 'redux'
+
+import * as reducers from './reducers'
+
+const reducer = combineReducers(reducers)
+var store = createStore(reducer)
+--------------------------------------------------------------------------------------
+
+Redux Summary
+Redux is a state management libary that uses the concepts of actions, reducers, and a store to make it easier to access and modify your application state.
+
+Example Redux scenario
+Here is an example of how actions, reducers and the store are connected.
+
+The current state is stored in a store.
+console.log(store.getState())
+//['bread','cheese']
+The user wants to add a new item to the store. The user uses an action creator to create an action with a type of ‘ADD_ITEM’ and with an item attribute of 'apple' and dispatches it.
+
+const addItem = (item) => {
+  return {
+    type: 'ADD_ITEM',
+    item: item
+  }
+}
+
+store.dispatch(addItem('apple'))
+The reducer calculates how the store state should change according to the dispatched action. If there are multiple reducers, they are combined together to produce the final state tree.
+const reducer = (state = [], action) => {
+  switch(action.type){
+    case 'ADD_ITEM':
+      return [...state, action.item]
+    default:
+      return state   
+   }
+}
+
+The store is updated and now contains the new information based on the action.
+console.log(store.getState())
+//['bread','cheese','apple]
+
+--------------------------------------------------------------------------------------
+
+Restaurant Management System using React Redux part 1 (PROJECT Requrement)
+
+In this tutorial lab, we will be state logic behind a restaurant management system using Redux. We will the tie the state logic to React components in Module 3's tutorial lab. The finished application should look like this:
+
+ACTUAL FINISHED: https://codesandbox.io/s/mz36mzv308 REDUX FINISHED: https://codesandbox.io/s/l71kxlov79
+
+Here are a list of features that our application will have:
+
+User can select a table. If the user selects an already selected table, it will deselect it.
+User can check in/ check out a selected table. Checking out should clear the table items and add the bill total to the total money earned value.
+User can add items to the selected table if it is checked in
+User can delete items from selected table if it is checked in
+The user should also be able to see:
+
+Currently selected table
+Total number of tables available to be checked in.
+Which tables are checked in / checked out
+All the ordered items from the selected table
+The total bill for the selected table
+The total amount of money earned from checked out tables
+Step 1. Setting up your project
+In this step, we will set up the project structure so that you can keep your project organized. A completed example of this step can be found here : https://codesandbox.io/s/zw3jzp9y54
+
+Go to https://codesandbox.io/s/new to create a new React project.
+Fork the project so that you can save it to your account.
+Give the project a title such as “Restaurant Management System”
+Add redux as a dependency.
+Create a new folder inside the src folder. Name it actions.
+Create a new folder inside the src folder. Name it reducers.
+Create a new folder inside the src folder. Name it constants.
+Step 2. Designing the State tree
+In this step, we will figure out how the state of our application should look.
+
+In order to implement all the features, we will need to keep track of the following state:
+
+Currently selected table
+Status of all tables (checked in or checked out)
+What orders have been placed for each of the tables
+Total money earned from checked out tables
+We can model this using the following state tree:
+
+
+{
+  selectedTable: id,
+  tableStatusData: array,
+  tableData: 2D array,
+  moneyEarned: num 
+}
+
+Step 3. Designing the Actions
+In this step, we will design the actions for our application. A completed example of this step can be found here : https://codesandbox.io/s/zw3jzp9y54
+
+Here is a list of allthe actions we will need to create based off our application features and our state tree:
+
+SELECT_TABLE - Select a table
+TOGGLE_TABLE - Check in/ check out a table
+INCREMENT_MONEY_EARNED - Add money to the total amount of money earned
+ADD_TABLE_ITEM - Add item to the selected table
+DELETE_TABLE_ITEM - Delete items from the selected table
+Inside the constants folder, create a new file named constants.js.
+Copy the following inside constants.js:
+const SELECT_TABLE = "SELECT_TABLE";
+const TOGGLE_TABLE = "TOGGLE_TABLE";
+const INCREMENT_MONEY_EARNED = "INCREMENT_MONEY_EARNED";
+const ADD_TABLE_ITEM = "ADD_TABLE_ITEM";
+const DELETE_TABLE_ITEM = "DELETE_TABLE_ITEM";
+
+module.exports = {
+  SELECT_TABLE,
+  TOGGLE_TABLE,
+  INCREMENT_MONEY_EARNED,
+  ADD_TABLE_ITEM,
+  DELETE_TABLE_ITEM
+};
+
+This file contains all the constants that will be used in our actions.
+
+Inside the actions folder, create a new file named addTableItem.js.
+Copy the following inside addTableItem.js:
+import { ADD_TABLE_ITEM } from "../constants/constants.js";
+
+const addTableItem = (name, price, id) => {
+  return {
+    type: ADD_TABLE_ITEM,
+    tableId: id,
+    item: {
+      name: name,
+      price: price
+    }
+  };
+};
+
+export default addTableItem;
+The addTableItem action creator will create a ADD_TABLE_ITEM action that contains a tableId to indicate which table to add to and an item object with a name and a price to indicate what to add.
+
+Inside the actions folder, create a new file named deleteTableItem.js.
+Copy the following inside deleteTableItem.js:
+import { DELETE_TABLE_ITEM } from "../constants/constants.js";
+
+const deleteTableItem = (tableId, id) => {
+  return {
+    type: DELETE_TABLE_ITEM,
+    tableId: tableId,
+    id: id
+  };
+};
+
+export default deleteTableItem;
+The deleteTableItem action creator will create a DELETE_TABLE_ITEM action that contains a tableId to indicate which table to delete from and an id to indicate which item to delete.
+
+Inside the actions folder, create a new file named incrementMoneyEarned.js.
+Copy the following inside incrementMoneyEarned.js:
+import { INCREMENT_MONEY_EARNED } from "../constants/constants.js";
+
+const incrementMoneyEarned = amount => {
+  return {
+    type: INCREMENT_MONEY_EARNED,
+    amount: amount
+  };
+};
+
+export default incrementMoneyEarned;
+The incrementMoneyEarned action creator will create an INCREMENT_MONEY_EARNED action that contains the amount to add to the total amount of money earned.
+
+Inside the actions folder, create a new file named selectTable.js.
+Copy the following inside selectTable.js:
+import { SELECT_TABLE } from "../constants/constants.js";
+
+const selectTable = id => {
+  return {
+    type: SELECT_TABLE,
+    id: id
+  };
+};
+
+export default selectTable;
+The selectTable action creator will create a SELECT_TABLE action that contains the id of the table to select.
+
+Inside the actions folder, create a new file named toggleTable.js.
+Copy the following inside toggleTable.js:
+import { TOGGLE_TABLE } from "../constants/constants.js";
+
+const toggleTable = id => {
+  return {
+    type: TOGGLE_TABLE,
+    id: id
+  };
+};
+
+export default toggleTable;
+The toggleTable action creator will create a TOGGLE_TABLE action that contains the id of the table to check in/check out.
+
+Step 4. Designing the Reducers
+In this step, we will create the Reducers for our application. A completed example of this step can be found here : https://codesandbox.io/s/ovoo232n06
+
+We will create 4 separate reducers since we have 4 attributes in our state tree. Here are the reducers that we will create:
+
+selectedTable
+tableStatusData
+tableData
+moneyEarned
+Inside the reducers folder, create a new file named selectedTable.js.
+Copy the following inside selectedTable.js:
+import { SELECT_TABLE } from "../constants/constants.js";
+
+const selectedTable = (state = null, action) => {
+  switch (action.type) {
+    case SELECT_TABLE:
+      if (state === action.id) return null;
+      else return action.id;
+    default:
+      return state;
+  }
+};
+
+export default selectedTable;
+The selectedTable reducer is in charge of handling the state changes to the selectedTable attribute of the overall state. The selectedTable state should just be a single integer that represents the id of the selected table. The state is initialized to null. The reducer only handles the SELECT_TABLE action. In the SELECT_TABLE action logic, if the dispatched action contains an id that is already selected, we return null to deselect the table. Otherwise, we return the action id to select the table.
+
+Inside the reducers folder, create a new file named tableStatusData.js.
+Copy the following inside tableStatusData.js:
+import { TOGGLE_TABLE } from "../constants/constants.js";
+
+var initialTableData = [];
+
+for (let i = 0; i < 16; i++) {
+  initialTableData.push([]);
+}
+
+const tableStatusData = (state = initialTableStatusData, action) => {
+  switch (action.type) {
+    case TOGGLE_TABLE:
+      var stateCopy = state.slice();
+      stateCopy[action.id] = !stateCopy[action.id];
+      return stateCopy;
+    default:
+      return state;
+  }
+};
+
+export default tableStatusData;
+The tableStatusData reducer is in charge of handling the state changes to the tableStatusData attribute of the overall state. The tableStatusData state should be an boolean array of size 16 that represents whether each of the 16 tables is checked in or not. The state array is initialized to contain all false values. The reducer only handles the TOGGLE_TABLE action. In the TOGGLE_TABLE action logic, we make a copy of the state using slice() and then toggle the boolean value of the targeted index before returning the copy.
+
+Inside the reducers folder, create a new file named tableData.js.
+Copy the following inside tableData.js:
+import {
+  ADD_TABLE_ITEM,
+  DELETE_TABLE_ITEM,
+  TOGGLE_TABLE
+} from "../constants/constants.js";
+
+var initialTableData = [];
+
+for (let i = 0; i < 16; i++) {
+  initialTableData.push([]);
+}
+
+const tableData = (state = initialTableData, action) => {
+  switch (action.type) {
+    case ADD_TABLE_ITEM:
+      var stateCopy = [];
+      for (let i = 0; i < 16; i++) {
+        stateCopy.push(state[i].slice());
+      }
+      stateCopy[action.tableId].push(action.item);
+      return stateCopy;
+    case DELETE_TABLE_ITEM:
+      var stateCopy = [];
+      for (let i = 0; i < 16; i++) {
+        stateCopy.push(state[i].slice());
+      }
+      stateCopy[action.tableId].splice(action.id, 1);
+      return stateCopy;
+    case TOGGLE_TABLE:
+      var stateCopy = [];
+      for (let i = 0; i < 16; i++) {
+        stateCopy.push(state[i].slice());
+      }
+      stateCopy[action.id] = [];
+      return stateCopy;
+    default:
+      return state;
+  }
+};
+
+export default tableData;
+
+The tableData reducer is in charge of handling the state changes to the tableData attribute of the overall state. The tableData state should be a 2D array that contains 16 arrays that each contain the ordered items for the table that they represent. The state initialized to be an array of 16 empty arrays.
+
+The reducer handles the ADD_TABLE_ITEM, DELETE_TABLE_ITEM and TOGGLE_TABLE actions:
+
+ADD_TABLE_ITEM - the reducer makes a copy of the 2D array, finds the array representing the tableId from the dispatched action, and pushes the dispatched action item onto it.
+
+DELETE_TABLE_ITEM - the reducer makes a copy of the 2D array, finds the array representing the tableId from the dispatched action, and deletes the dispatched action index from it.
+
+TOGGLE_TABLE - the reducer makes a copy of the 2D array, finds the array representing the tableId from the dispatched action, and empties the array. (Both checking in and out result in empty arrays)
+
+Inside the reducers folder, create a new file named moneyEarned.js.
+Copy the following inside moneyEarned.js:
+import { INCREMENT_MONEY_EARNED } from "../constants/constants.js";
+
+const moneyEarned = (state = 0, action) => {
+  switch (action.type) {
+    case INCREMENT_MONEY_EARNED:
+      return state + action.amount;
+    default:
+      return state;
+  }
+};
+
+export default moneyEarned;
+The moneyEarned reducer is in charge of handling the state changes to the moneyEarned attribute of the overall state. The moneyEarned state should just be an integer. The state is initialized to 0. The reducer only handles the INCREMENT_MONEY_EARNED action. In the INCREMENT_MONEY_EARNED action logic, the action increment amount is added to the previous state.
+
+Inside the reducers folder, create a new file named reducer.js.
+Copy the following inside reducer.js:
+import { combineReducers } from "redux";
+
+import selectedTable from "./selectedTable.js";
+import tableStatusData from "./tableStatusData.js";
+import tableData from "./tableData.js";
+import moneyEarned from "./moneyEarned.js";
+
+const reducer = combineReducers({
+  selectedTable,
+  tableStatusData,
+  tableData,
+  moneyEarned
+});
+
+export default reducer;
+In this file, we combine all of our 4 reducers together using the combineReducers() method from the redux library.
+
+Step 5. Creating the Store and testing it out
+In this step, we will create a store using our reducer and test the logic out by dispatching a few actions! A completed example of this step can be found here: https://codesandbox.io/s/934rx9q00p
+
+Inside index.js, import the reducer and create a store. Also import all of the action creators:
+import React from "react";
+import ReactDOM from "react-dom";
+import { createStore } from "redux";
+import reducer from "./reducers/reducer.js";
+import addTableItem from "./actions/addTableItem.js";
+import deleteTableItem from "./actions/deleteTableItem.js";
+import incrementMoneyEarned from "./actions/incrementMoneyEarned.js";
+import selectTable from "./actions/selectTable.js";
+import toggleTable from "./actions/toggleTable.js";
+
+import "./styles.css";
+
+var store = createStore(reducer);
+
+
+function App() {
+  return (
+    <div className="App">
+      <h1>Hello CodeSandbox</h1>
+      <h2>Start editing to see some magic happen!</h2>
+    </div>
+  );
+}
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
+Make sure to import createStore from the redux library. Then use it to create a new store with createStore(reducer).
+
+Now test out the logic by dispatching a few actions! Copy the code below into index.js to run a few tests:
+
+
+import React from "react";
+import ReactDOM from "react-dom";
+import { createStore } from "redux";
+import reducer from "./reducers/reducer.js";
+import addTableItem from "./actions/addTableItem.js";
+import deleteTableItem from "./actions/deleteTableItem.js";
+import incrementMoneyEarned from "./actions/incrementMoneyEarned.js";
+import selectTable from "./actions/selectTable.js";
+import toggleTable from "./actions/toggleTable.js";
+
+import "./styles.css";
+
+var store = createStore(reducer);
+
+const getSelectedTable = () => {
+  var state = store.getState();
+  return state.selectedTable;
+};
+
+const getAvailableTables = () => {
+  var state = store.getState();
+  var tablesAvailable = 0;
+
+  for (let i = 0; i < state.tableStatusData.length; i++) {
+    if (state.tableStatusData[i] === true) tablesAvailable++;
+  }
+  return tablesAvailable;
+};
+const getTableStatusData = () => {
+  var state = store.getState();
+  return state.tableStatusData;
+};
+
+const getTableItems = () => {
+  var state = store.getState();
+
+  if (getSelectedTable() === null) var tableItems = [];
+  else var tableItems = state.tableData[getSelectedTable()];
+  return tableItems;
+};
+
+const getTotalBill = () => {
+  var tableItems = getTableItems();
+  var totalBill = 0;
+  for (let i = 0; i < tableItems.length; i++) {
+    totalBill += tableItems[i].price;
+  }
+  return totalBill;
+};
+
+const getMoneyEarned = () => {
+  var state = store.getState();
+  return state.moneyEarned;
+};
+
+const checkOut = () => {
+  var totalBill = getTotalBill();
+  store.dispatch(incrementMoneyEarned(totalBill));
+  store.dispatch(toggleTable(getSelectedTable()));
+};
+
+store.subscribe(() => {
+  console.log(`Selected Table: ${getSelectedTable()}`);
+  console.log(`Tables Available: ${getAvailableTables()} / 16`);
+  console.log(`Table Availability Status: ${getTableStatusData()}`);
+  console.log(`Selected Table Items List:`, getTableItems());
+  console.log(`Selected Table Bill: $${getTotalBill()}`);
+  console.log(`Total Money Earned: $${getMoneyEarned()}`);
+  console.log();
+});
+
+//test dispatched actions
+
+//select and toggle table 0, add items
+//select and toggle table 1, add items
+//check out current selected table
+//select table 0
+store.dispatch(selectTable(0));
+store.dispatch(toggleTable(0));
+store.dispatch(addTableItem("apples", 2, 0));
+store.dispatch(addTableItem("bananas", 3, 0));
+store.dispatch(deleteTableItem(0 , 1));
+
+store.dispatch(selectTable(1));
+store.dispatch(toggleTable(1));
+store.dispatch(addTableItem("apples", 2, 1));
+store.dispatch(addTableItem("bananas", 3, 1));
+store.dispatch(addTableItem("carrots", 4, 1));
+checkOut();
+store.dispatch(selectTable(0));
+
+function App() {
+  return (
+    <div className="App">
+      <h1>Hello CodeSandbox</h1>
+      <h2>Start editing to see some magic happen!</h2>
+    </div>
+  );
+}
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
+
+Since there is no UI to display our store state, we will have to log our store state to the console. I've added a few self explanatory helper methods that get parts of the store state. I also subscribed an event listener that logs what the user should be able to see once we have our UI created.
+
+The checkout() method is necessary because the moneyEarned reducer cant access state from the tableData reducer. Its purpose is to get the total bill from the selected table, add that bill to the total money earned, and then check out the selected table.
+
+I've added a test that does the following:
+
+selects and toggles table 0 and then adds a few items and then deletes an item
+selects and toggles table 1 and then adds a few items
+checks out the selected table ( table 1)
+reselects table 0
+You can see how the state changes with every dispatched action in the console.
